@@ -1,68 +1,116 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Setting up React
+To set up react we will be using a scaffolding tool called [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## What is create-react-app?
+create-react-app is a tool built by facebook that quickly sets up a React project.  The project was built with three main goals: one dependency (webpack does all the things), No configuration required (standard reasonable configurations for development and production builds), no lock-in (if you don't like the standard configuration you can eject and create your own).
 
-In the project directory, you can run:
+Out of the box we will be able to enjoy the following great features:
+* REACT with JSX
+* ES6+ (all the es6 stuff we love writing with)
+* Autoprefixes CSS (no need to add in all the -webkit stuff)
+* Unit test runner (Jest is already installed and configured)
+* Live development server (make some changes and the app automatically reloads)
+* Build scripts to bundle all the things (JS, CSS, images, and sourcemaps)
+* Offline service works (you can *technically* do development offline)
+* Hassle free updates (if a new version of create-react-app comes out you just update the version in the package.json file)
 
-### `npm start`
+## Building a project
+To kick things off we will use npx to build our app.  Npx is like Npm but it calls a script that a developer has built.  In this case the facebook developer have built out scripts that install all the required packages, setup webpack, and build out a basic application.
+```js
+npx create-react-app intro-react
+```
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+If the above command didn't work for you, you need to update npm.  Find an instructor to help you with that.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## Github
+Now that we have our beginning files inplace we need to create a github repo and push things up in a very particular order.  Create-react-app has already done a git init, built a README.md, and done and add and commit for us.  We just need to link our local repo to a github repo and push.
+* Create a github repo - DO NOT initialize with a readme.
+* `git remote add origin <ADD SSH STUFF HERE>`
+* `git push -u origin master`
+* `git checkout -b setup`
 
-### `npm test`
+You should now have all the create-react-app stuff pushed up to github and be on a setup branch.  Now we will modify the file structure to fit our needs.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Organizing files (our changes)
+### Create App Folder
 
-### `npm run build`
+Right now there are a bunch of files called app.SOMETHING that are just hanging out in the root of the src folder.  Thats kinda anoying so lets move those into a App folder. Also move the logo file into that folder.   Next check the index.js file and make sure the path is correct to the App module. Your file structure should now look like this:
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+![initial file structure](../images/setup_move_app.png)
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+### Remove testing
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+For the scope of this class we won't be using jest to do any testing - we just will not have time to.  To make sure our project looks clean lets go ahead and removing the App.test.js file.  You can also delete the test script in your package.json file.  If at some point you decide you want to try testing you can easily come back and add this stuff in.
 
-### `npm run eject`
+### Make a global styles folder
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+We will need somewhere to hold our _variables.scss and other global styling files.
+* Make a folder inside source called styles.
+* Move index.css into the styles folder and rename it index.scss
+* Correct the import statement in index.js so it is:
+```import './styles/index.scss';```
+* Create a _variables.scss file in the styles folder and use it to create a variable that can be used to change the background color in index.scss
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Your folder structure should now look like this:
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+![with scss](../images/setup_scss.png)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Allow create-react-app to use scss instead of css
+On your command line run:
+```npm install node-sass --save-dev```
 
-## Learn More
+Your scss styling should now work.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Add eslint
+* Instal VS Code plugin - [eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+* Create the `.eslintrc` file at the root of your project like usual and add the following:
+```
+{
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "extends": ["airbnb-base", "react-app"],
+  "globals": {
+    "document": true,
+    "window": true,
+    "allowTemplateLiterals": true
+  },
+  "rules": {
+    "no-console": [1, { "allow": ["error"] }],
+    "no-debugger": 1,
+    "class-methods-use-this": 0,
+    "linebreak-style": 0 
+  }
+}
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+* Install airbnb styles
+`npm install eslint-config-airbnb-base --save-dev`
 
-### Code Splitting
+Your project should now be runing eslinting.  There is one major difference between how we use eslint now and how we did before.  Now it serves as a tool - it will NOT fail your build if you have errors.  With the VS Code plugin you should see files with errors in red.  Do yourself a favor - fix the errors before you move on.  It will make your code cleaner and probably catch errors like misspelled words etc.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+### Add bootstrap
+To use bootstrap with react we will use something called reactstrap.  This is an npm package that someone has made to create react components out of the bootstrap components.  We need both packages because they don't include the bootstrap css in reactstrap.
+* Install both components
 
-### Analyzing the Bundle Size
+`npm install bootstrap --save`
+* Add a button to app.js and import the bootrap css file
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+At top of file: `import 'bootstrap/dist/css/bootstrap.min.css';`
 
-### Making a Progressive Web App
+Inside render: `<button className='btn btn-danger'>HELP ME</button>`
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+Bootstrap is now ready to go!
 
-### Advanced Configuration
+### Add firebase
+* install firebase with npm (nothing new here)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+`npm install firebase --save`
 
-### Deployment
+## Github
+At this  point you can add, commit, and push everything to your setup branch.  You can then PR to master and merge.  It't time to write some react!
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+## Chrome Extension
+- Install the extension [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en). This will show up in your **dev tools** in the top bar (but only when you are viewing a website that is using react)
+![react-dev-tools](../images/react-dev-tools.png)
